@@ -2,80 +2,52 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 # ctest
 
-azure-ctest is a simple portable C test runner.
+azure-ctest (or just "ctest") is a simple portable C test runner. Tests written with ctest are built into standalone binaries that run from the command line.
 
-## Setup
-
-1. Clone **azure-ctest** by:
+## Build
 
 ```
 git clone https://github.com/Azure/azure-ctest
-```
-
-2. Create a folder called *cmake* (or any name of your choice).
-
-3. Switch to the *cmake* folder and run
-```
+cd azure-ctest
+mkdir build
+cd build
 cmake ..
-```
-
-### Build
-
-Switch to the *cmake* folder and run:
-
-```
 cmake --build .
 ```
 
-### Installation and Use
-Optionally, you may choose to install azure-ctest on your machine:
-
-1. Switch to the *cmake* folder and run
-    ```
-    cmake --build . --target install
-    ```
-    or
-
-    Linux:
-    ```
-    sudo make install
-    ```
-
-    Windows:
-    ```
-    msbuild /m INSTALL.vcxproj
-    ```
-
-2. Use it in your project (if installed)
-    ```
-    find_package(ctest REQUIRED CONFIG)
-    target_link_library(yourlib ctest)
-    ```
-
-### Building the tests
-
-In order to build the tests use the *run_unittests* cmake option:
+## Run ctest's unit tests (optional)
 
 ```
-cmake .. -Drun_unittests:bool=ON
+cmake -DENABLE_UNIT_TESTS=ON ..
+cmake --build .
+ctest -C Debug # <- CMake's 'ctest' tool, which invokes our test binaries
 ```
 
-## Example
+## Install and Use
+To take a dependency on ctest in your project, install it in your developer environment:
+
+```
+cmake --build . --target install
+```
+
+If your project uses CMake, refer to ctest in your CMakeLists.txt file as follows:
+
+```
+find_package(ctest REQUIRED CONFIG)
+# ...
+target_link_library(yourlib ctest)
+```
+
+## Write tests
 
 ```c
 #include "ctest.h"
-#include "SomeUnitUnderTest.h"
 
-CTEST_BEGIN_TEST_SUITE(SimpleTestSuiteOneTest)
+CTEST_BEGIN_TEST_SUITE(Suite1)
 
 CTEST_FUNCTION(Test1)
 {
-    // arrange
-
-    // act
-    int x = SomeFunction();
-
-    // assert
+    int x = some_function();
     CTEST_ASSERT_ARE_EQUAL(int, 42, x);
 }
 
